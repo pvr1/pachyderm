@@ -28,9 +28,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const oneDayInSeconds = 60 * 60 * 24
-const twoDaysInSeconds = 60 * 60 * 48
-
 type amazonClient struct {
 	bucket                 string
 	cloudfrontDistribution string
