@@ -698,7 +698,6 @@ If <object store backend> is \"s3\", then the arguments are:
 	var cloudfrontDistribution string
 	var creds string
 	var iamRole string
-	var vault string
 	deployAmazon := &cobra.Command{
 		Use:   "{{alias}} <bucket-name> <region> <disk-size>",
 		Short: "Deploy a Pachyderm cluster running on AWS.",
@@ -715,8 +714,8 @@ If <object store backend> is \"s3\", then the arguments are:
 				finishMetricsWait := _metrics.FinishReportAndFlushUserAction("Deploy", retErr, start)
 				finishMetricsWait()
 			}()
-			if creds == "" && vault == "" && iamRole == "" {
-				return errors.Errorf("one of --credentials, --vault, or --iam-role needs to be provided")
+			if creds == "" && iamRole == "" {
+				return errors.Errorf("one of --credentials, or --iam-role needs to be provided")
 			}
 
 			// populate 'amazonCreds' & validate
@@ -749,19 +748,10 @@ If <object store backend> is \"s3\", then the arguments are:
 					}
 				}
 			}
-			if vault != "" {
-				if amazonCreds != nil {
-					return errors.Errorf("only one of --credentials, --vault, or --iam-role needs to be provided")
-				}
-				parts := strings.Split(vault, ",")
-				if len(parts) != 3 || containsEmpty(parts) {
-					return errors.Errorf("incorrect format of --vault")
-				}
-				amazonCreds = &assets.AmazonCreds{VaultAddress: parts[0], VaultRole: parts[1], VaultToken: parts[2]}
-			}
+
 			if iamRole != "" {
 				if amazonCreds != nil {
-					return errors.Errorf("only one of --credentials, --vault, or --iam-role needs to be provided")
+					return errors.Errorf("only one of --credentials, or --iam-role needs to be provided")
 				}
 				opts.IAMRole = iamRole
 			}
@@ -825,7 +815,6 @@ If <object store backend> is \"s3\", then the arguments are:
 			"an alpha feature. No security restrictions have been"+
 			"applied to cloudfront, making all data public (obscured but not secured)")
 	deployAmazon.Flags().StringVar(&creds, "credentials", "", "Use the format \"<id>,<secret>[,<token>]\". You can get a token by running \"aws sts get-session-token\".")
-	deployAmazon.Flags().StringVar(&vault, "vault", "", "Use the format \"<address/hostport>,<role>,<token>\".")
 	deployAmazon.Flags().StringVar(&iamRole, "iam-role", "", fmt.Sprintf("Use the given IAM role for authorization, as opposed to using static credentials. The given role will be applied as the annotation %s, this used with a Kubernetes IAM role management system such as kube2iam allows you to give pachd credentials in a more secure way.", assets.IAMAnnotation))
 	commands = append(commands, cmdutil.CreateAlias(deployAmazon, "deploy amazon"))
 	commands = append(commands, cmdutil.CreateAlias(deployAmazon, "deploy aws"))
