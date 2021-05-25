@@ -163,12 +163,16 @@ func TestConfigListContext(t *testing.T) {
 	require.NoError(t, run(t, `
 		echo '{}' | pachctl config set context foo
 		echo '{}' | pachctl config set context bar
-		pachctl config list context | match -v "\*	bar"
+		pachctl config list context | match -v "E\*	bar"
 		pachctl config list context | match "	bar"
 		pachctl config list context | match "	foo"
 
 		pachctl config set active-context bar
-		pachctl config list context | match "\*	bar"
+		pachctl config list context | match "E\*	bar"
 		pachctl config list context | match "	foo"
+
+		pachctl config set active-enterprise-context foo
+		pachctl config list context | match "\*	bar"
+		pachctl config list context | match "E	foo"
 	`))
 }

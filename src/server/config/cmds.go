@@ -374,13 +374,22 @@ func Cmds() []*cobra.Command {
 				return err
 			}
 
+			activeEnterpriseContext, _, err := cfg.ActiveEnterpriseContext(true)
+			if err != nil {
+				return err
+			}
+
 			fmt.Println(listContextHeader)
 			for _, key := range keys {
+				var activeMarker string
 				if key == activeContext {
-					fmt.Printf("*\t%s\n", key)
-				} else {
-					fmt.Printf("\t%s\n", key)
+					activeMarker = "*"
 				}
+				var activeEnterpriseMarker string
+				if key == activeEnterpriseContext {
+					activeEnterpriseMarker = "E"
+				}
+				fmt.Printf("%s\t%s\n", activeEnterpriseMarker+activeMarker, key)
 			}
 			return nil
 		}),
