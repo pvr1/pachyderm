@@ -148,17 +148,17 @@ type Hasher interface {
 }
 
 type pipelineJobIterator struct {
-	iterator Iterator
-	pipelineJobID    string
-	hasher   Hasher
+	iterator      Iterator
+	pipelineJobID string
+	hasher        Hasher
 }
 
 // NewPipelineJobIterator creates a new job iterator.
 func NewPipelineJobIterator(iterator Iterator, pipelineJobID string, hasher Hasher) Iterator {
 	return &pipelineJobIterator{
-		iterator: iterator,
-		pipelineJobID:    pipelineJobID,
-		hasher:   hasher,
+		iterator:      iterator,
+		pipelineJobID: pipelineJobID,
+		hasher:        hasher,
 	}
 }
 
